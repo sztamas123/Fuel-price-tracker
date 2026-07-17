@@ -8,5 +8,8 @@ psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
   -f src/database/migrations/001_initial_schema.sql
 ```
 
-Runtime migration automation and repositories are intentionally deferred to the
-later implementation phases.
+The initial schema stores tracked cities and city-average fuel observations. It
+does not model or claim to track individual gas stations.
+
+Runtime migration automation is intentionally deferred to a later phase. Phase
+2 repositories use this schema but never apply migrations automatically.

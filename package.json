@@ -2,7 +2,7 @@
   "name": "fuel-price-tracker",
   "version": "0.1.0",
   "private": true,
-  "description": "Scheduled fuel price monitoring and Telegram alerts for Romanian stations",
+  "description": "Scheduled city-level fuel price monitoring and Telegram alerts for Romania",
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
