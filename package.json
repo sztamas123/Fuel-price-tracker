@@ -1,0 +1,29 @@
+{
+  "name": "fuel-price-tracker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Scheduled fuel price monitoring and Telegram alerts for Romanian stations",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/jobs/monitor-fuel-prices.js",
+    "dev": "tsx src/jobs/monitor-fuel-prices.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^4.1.10"
+  }
+}
