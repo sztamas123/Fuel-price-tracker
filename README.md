@@ -4,9 +4,10 @@ A production-oriented Node.js batch application that records Romanian city-level
 fuel-price averages and sends Telegram alerts when diesel becomes meaningfully
 cheaper.
 
-The application is intentionally serverless in the operational sense: GitHub
-Actions starts one process every three hours, the process fetches prices, updates
-Neon PostgreSQL, evaluates alerts, sends eligible notifications, and exits.
+The application is intentionally serverless in the operational sense:
+cron-job.org asks GitHub Actions to start one process every three hours, the
+process fetches prices, updates Neon PostgreSQL, evaluates alerts, sends eligible
+notifications, and exits.
 
 > **Scope:** this project tracks published **city averages**, not individual gas
 > stations. A notification must not be interpreted as a guaranteed pump price.
@@ -20,7 +21,7 @@ Neon PostgreSQL, evaluates alerts, sends eligible notifications, and exits.
 - Configurable absolute-target and price-drop alerts
 - Persistent cooldown and duplicate prevention
 - Telegram Bot API notifications
-- One-shot execution designed for scheduled GitHub Actions
+- One-shot execution triggered through GitHub Actions
 - Strict external-data validation and transactional persistence
 - Isolated, deterministic demo scenarios
 - TypeScript and Vitest coverage with minimal dependencies
@@ -28,7 +29,8 @@ Neon PostgreSQL, evaluates alerts, sends eligible notifications, and exits.
 ## How it works
 
 ```text
-GitHub Actions (every 3 hours)
+cron-job.org (every 3 hours)
+  -> GitHub Actions workflow dispatch
   -> load and validate configuration
   -> fetch PretCarburant city averages
   -> validate and store observations in Neon
@@ -71,6 +73,7 @@ Unchanged and higher prices are always suppressed.
 - Neon serverless PostgreSQL
 - Telegram Bot API
 - GitHub Actions
+- cron-job.org
 - Vitest
 
 ## Project structure
@@ -290,11 +293,13 @@ npm run seed:cleanup
 Both commands refuse to run unless `ALLOW_DEMO_SEED=true`, and they reject a
 demo URL that identifies the production database.
 
-## GitHub Actions deployment
+## Scheduled deployment
 
 The workflow at
 [`.github/workflows/monitor-fuel-prices.yml`](.github/workflows/monitor-fuel-prices.yml)
-runs every three hours and supports manual execution from the Actions tab.
+supports manual and authenticated API execution. cron-job.org calls that API
+every three hours; the workflow does not rely on GitHub's best-effort cron
+scheduler.
 
 In the GitHub repository, open:
 
@@ -328,9 +333,46 @@ After pushing the workflow:
 3. Choose **Run workflow** for the first test.
 4. Inspect the structured job summary.
 
-Scheduled workflows run from the default branch. GitHub cron schedules can be
-delayed during periods of high load; the database timestamps reflect the actual
-fetch time.
+### External scheduler
+
+Create a fine-grained GitHub personal access token:
+
+1. Open **GitHub → Settings → Developer settings → Personal access tokens →
+   Fine-grained tokens**.
+2. Limit repository access to `Fuel-price-tracker` only.
+3. Grant the repository permission **Actions: Read and write**. No other write
+   permission is required.
+4. Choose an expiration and record a reminder to rotate the token.
+
+Create a job at [cron-job.org](https://cron-job.org/) with these settings:
+
+```text
+Title: Fuel price tracker
+URL: https://api.github.com/repos/sztamas123/Fuel-price-tracker/actions/workflows/monitor-fuel-prices.yml/dispatches
+Method: POST
+Schedule: every 3 hours at minute 17
+Timezone: Europe/Bucharest
+```
+
+Add these request headers:
+
+```text
+Accept: application/vnd.github+json
+Authorization: Bearer YOUR_FINE_GRAINED_TOKEN
+X-GitHub-Api-Version: 2026-03-10
+Content-Type: application/json
+```
+
+Set the request body to:
+
+```json
+{"ref":"main"}
+```
+
+Keep the token only in cron-job.org: never add it to this repository, an
+environment example, or a support message. Enable failure notifications, then
+use cron-job.org's **Test run**. A successful request returns HTTP `200` and
+creates a GitHub Actions run whose event is `workflow_dispatch`.
 
 ## Database model
 

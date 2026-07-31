@@ -14,12 +14,16 @@ access.
 
 ## Runtime model
 
-The tracker is a short-lived batch process. GitHub Actions starts it every three
-hours (or on demand), the process performs one monitoring pass, and then exits.
-There is no web server and no in-memory scheduler.
+The tracker is a short-lived batch process. cron-job.org dispatches the GitHub
+Actions workflow every three hours, or an operator starts it on demand. The
+process performs one monitoring pass and then exits. There is no web server and
+no in-memory scheduler. The external trigger avoids GitHub's best-effort
+scheduled-event delivery while retaining GitHub Actions as the execution
+environment.
 
 ```text
-GitHub Actions
+cron-job.org
+  -> GitHub Actions workflow dispatch
   -> monitoring job
     -> configured city-average fuel price provider
     -> validation and observation storage

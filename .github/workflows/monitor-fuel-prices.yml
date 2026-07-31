@@ -1,9 +1,6 @@
 name: Monitor fuel prices
 
 on:
-  schedule:
-    # Avoid the start of the hour, when scheduled GitHub Actions are most congested.
-    - cron: "17 */3 * * *"
   workflow_dispatch:
 
 permissions:

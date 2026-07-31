@@ -73,9 +73,10 @@
 - Added a console-only demo runner that exercises the real repository, analysis,
   alert, suppression, and notification-history services without contacting
   Telegram.
-- Added the scheduled GitHub Actions workflow with a three-hour cron, manual
-  dispatch, least-privilege permissions, concurrency control, timeout, locked
-  dependency installation, build, and production execution.
+- Added the GitHub Actions workflow with manual/API dispatch, least-privilege
+  permissions, concurrency control, timeout, locked dependency installation,
+  build, and production execution. A cron-job.org job supplies the dependable
+  three-hour trigger because GitHub did not deliver its scheduled events.
 - Added demo-scenario and seed-safety tests.
 - Added complete setup, Neon, Telegram, environment, testing, demo, GitHub
   Actions, provider-extension, operations, and future-improvement documentation
@@ -99,13 +100,14 @@ See `ARCHITECTURE.md` for module boundaries and data-source decisions.
 ### Remaining tasks
 
 All four requested implementation phases are complete. Before relying on the
-scheduled production workflow:
+production workflow:
 
 - apply migrations with `npm run db:migrate`;
 - push the Phase 4 commit;
 - configure the three GitHub repository secrets;
 - optionally configure threshold repository variables; and
-- run the workflow manually once from the GitHub Actions tab.
+- run the workflow manually once from the GitHub Actions tab; and
+- configure and test the external cron-job.org trigger described in `README.md`.
 
 ## Continuation note
 
