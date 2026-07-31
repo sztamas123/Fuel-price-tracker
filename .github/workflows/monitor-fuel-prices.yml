@@ -2,7 +2,8 @@ name: Monitor fuel prices
 
 on:
   schedule:
-    - cron: "0 */3 * * *"
+    # Temporary verification schedule. GitHub's minimum interval is five minutes.
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 permissions:
