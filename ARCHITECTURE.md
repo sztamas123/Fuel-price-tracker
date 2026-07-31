@@ -63,8 +63,19 @@ GitHub Actions
    represented as `null` when unset.
 6. **Dependency direction:** the job composes concrete adapters; domain services
    depend on interfaces and plain values rather than on PostgreSQL or Telegram.
+7. **Conservative re-notification:** the first qualifying opportunity is sent.
+   Later alerts for the same city/fuel require the cooldown to have expired and
+   the price to be lower than the last notified price by the configured
+   additional amount. Unchanged or higher prices are always suppressed.
+8. **Persist after delivery:** notification history is written only after
+   Telegram confirms a successful request. Failed delivery is never recorded as
+   sent. A database failure after Telegram succeeds remains a known distributed
+   systems edge case because the two systems cannot share a transaction.
+9. **Independent checks:** one city/fuel failure does not prevent the remaining
+   observations from being processed. The job reports an overall failure after
+   attempting all checks so GitHub Actions exposes the problem.
 
-## Planned execution flow
+## Execution flow
 
 1. Load and validate configuration.
 2. Fetch observations from the configured provider.
@@ -76,8 +87,23 @@ GitHub Actions
 8. Persist successful notification records.
 9. Close resources and exit with a meaningful status code.
 
-Steps 2-5 are implemented in Phase 2. Steps 6-9 belong to Phase 3, and
-operational packaging, seed data, and comprehensive alert tests to Phase 4.
+Steps 2-5 are implemented in Phase 2 and steps 6-9 in Phase 3. Operational
+packaging, seed/demo data, and end-user documentation belong to Phase 4.
+
+## Alert semantics
+
+An opportunity exists when at least one configured condition matches:
+
+- the latest city average is at least `PRICE_DROP_VS_7D` below the prior
+  seven-day average;
+- it dropped by at least `PRICE_DROP_VS_PREVIOUS` from the preceding observation;
+- it is strictly below `ABSOLUTE_TARGET_PRICE`, when that optional value is set.
+
+The latest observation is excluded from its own historical averages. Multiple
+matching conditions are combined into one Telegram notification and one database
+record. Messages explicitly say "city average (not an individual station)" and
+include the configured city, fuel grade, comparisons, reasons, estimated saving
+when history permits, source attribution, and the Romanian local check time.
 
 ## Data-source attribution
 

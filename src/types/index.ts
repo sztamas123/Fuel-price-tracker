@@ -1,6 +1,8 @@
 export type {
   FuelPriceObservation,
   FuelType,
+  NewNotification,
+  NotificationRecord,
   PricePoint,
   StoredFuelPriceObservation,
   TrackedCity

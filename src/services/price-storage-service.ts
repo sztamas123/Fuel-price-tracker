@@ -1,10 +1,11 @@
-import type { FuelPriceProvider } from "../types/index.js";
+import type { FuelPriceObservation, FuelPriceProvider } from "../types/index.js";
 import type { CityPriceRepository } from "../repositories/index.js";
 import { validateObservations } from "./observation-validation.js";
 
 export interface StorageResult {
   fetched: number;
   inserted: number;
+  observations: FuelPriceObservation[];
 }
 
 export class PriceStorageService {
@@ -16,6 +17,6 @@ export class PriceStorageService {
   async fetchAndStore(): Promise<StorageResult> {
     const observations = validateObservations(await this.provider.fetchPrices());
     const inserted = await this.repository.saveObservations(observations);
-    return { fetched: observations.length, inserted };
+    return { fetched: observations.length, inserted, observations };
   }
 }

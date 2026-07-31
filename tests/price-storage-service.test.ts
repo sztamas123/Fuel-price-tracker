@@ -27,6 +27,7 @@ function observation(priceRon = 7.42): FuelPriceObservation {
 function repository(): CityPriceRepository {
   return {
     saveObservations: vi.fn(async (values) => values.length),
+    isCityEnabled: vi.fn(async () => true),
     findPriceHistory: vi.fn(async () => [])
   };
 }
@@ -39,7 +40,10 @@ describe("PriceStorageService", () => {
       priceRepository
     );
 
-    await expect(service.fetchAndStore()).resolves.toEqual({ fetched: 1, inserted: 1 });
+    const result = await service.fetchAndStore();
+
+    expect(result).toMatchObject({ fetched: 1, inserted: 1 });
+    expect(result.observations).toHaveLength(1);
     expect(priceRepository.saveObservations).toHaveBeenCalledOnce();
   });
 

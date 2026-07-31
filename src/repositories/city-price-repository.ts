@@ -7,6 +7,7 @@ import type {
 
 export interface CityPriceRepository {
   saveObservations(observations: FuelPriceObservation[]): Promise<number>;
+  isCityEnabled(cityExternalId: string): Promise<boolean>;
   findPriceHistory(
     cityExternalId: string,
     fuelType: FuelType,
@@ -118,5 +119,15 @@ export class PostgresCityPriceRepository implements CityPriceRepository {
       priceRon: Number(row.price_ron),
       observedAt: new Date(row.observed_at)
     }));
+  }
+
+  async isCityEnabled(cityExternalId: string): Promise<boolean> {
+    const result = await this.pool.query<{ enabled: boolean }>(
+      `SELECT enabled
+       FROM tracked_cities
+       WHERE external_id = $1`,
+      [cityExternalId]
+    );
+    return result.rows[0]?.enabled ?? false;
   }
 }

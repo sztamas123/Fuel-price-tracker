@@ -34,13 +34,38 @@
 - Added Phase 2 tests for provider mapping and malformed data, storage validation,
   average/median calculation, and historical analysis.
 
+## Phase 3 - Complete
+
+### Completed work
+
+- Implemented the 7-day-average, previous-observation, and optional absolute
+  target alert conditions for city averages.
+- Combined simultaneous matching conditions into one alert opportunity.
+- Implemented unchanged/higher-price suppression, a minimum cooldown, and the
+  additional-drop requirement for re-notification.
+- Added notification-history lookup and successful-send persistence in
+  PostgreSQL.
+- Added direct Telegram Bot API delivery with timeouts and response validation,
+  without another runtime dependency.
+- Added city-worded Telegram messages with comparison statistics, reasons,
+  estimated 50 L savings where possible, Romanian local time, and visible
+  PretCarburant CC BY 4.0 attribution.
+- Added the one-shot monitoring composition root with configuration loading,
+  provider selection, validation/storage, enabled-city checks, analysis,
+  notification delivery, resource cleanup, structured summaries, and nonzero
+  failure status.
+- Added unit/orchestration tests for all alert conditions, cooldown behavior,
+  duplicate prevention, Telegram formatting/delivery, persistence ordering, and
+  the complete monitoring flow.
+
 ### Current architecture
 
 The application is a short-lived scheduled batch process. A provider fetches
 city-average diesel prices, validation rejects the entire batch before any write
 if tracked-city data is malformed, and a transactional repository upserts city
-metadata and stores observations in Neon PostgreSQL. Analysis services read the
-durable history and calculate statistics without knowing about SQL.
+metadata and stores observations in Neon PostgreSQL. Analysis services evaluate
+durable history, then the notification service applies persistent suppression
+rules before delivering and recording eligible Telegram messages.
 
 The application does **not** track individual gas stations. An observation for
 Târgu Mureș represents the published city average and future notifications must
@@ -50,22 +75,14 @@ See `ARCHITECTURE.md` for module boundaries and data-source decisions.
 
 ### Remaining tasks
 
-#### Phase 3
-
-- Implement the three alert conditions against city averages.
-- Implement cooldown, unchanged-price suppression, and re-notification rules.
-- Generate city-worded Telegram messages with PretCarburant attribution.
-- Add Telegram delivery and successful-notification persistence.
-- Compose the scheduled monitoring job with clean shutdown/error handling.
-
 #### Phase 4
 
-- Add remaining alert, cooldown, duplicate, and Telegram tests.
 - Add fictional city-average historical seed/demo scenarios.
 - Add the three-hour GitHub Actions workflow and manual dispatch.
 - Complete end-user setup, Neon, Telegram, provider, and operations documentation.
+- Add database-focused integration coverage and a documented end-to-end demo.
 
 ## Continuation note
 
-Begin the next session at Phase 3. Do not describe observations as station prices
+Begin the next session at Phase 4. Do not describe observations as station prices
 and do not use PretCarburant station endpoints or HTML scraping.

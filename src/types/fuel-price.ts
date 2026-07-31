@@ -34,3 +34,20 @@ export interface PricePoint {
   priceRon: number;
   observedAt: Date;
 }
+
+export interface NotificationRecord {
+  id: string;
+  cityExternalId: string;
+  fuelType: FuelType;
+  priceRon: number;
+  reason: string;
+  sentAt: Date;
+}
+
+export interface NewNotification {
+  cityExternalId: string;
+  fuelType: FuelType;
+  priceRon: number;
+  reason: string;
+  sentAt: Date;
+}
