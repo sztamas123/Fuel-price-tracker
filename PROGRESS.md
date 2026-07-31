@@ -58,6 +58,29 @@
   duplicate prevention, Telegram formatting/delivery, persistence ordering, and
   the complete monitoring flow.
 
+## Phase 4 - Complete
+
+### Completed work
+
+- Added an explicit, repeatable migration runner with migration-history tracking.
+- Made the baseline schema safe to adopt in an already initialized database.
+- Added four deterministic city-average demo scenarios: stable, significant
+  drop, absolute target, and duplicate suppression.
+- Added transactional demo seed/reset and cleanup commands protected by
+  `ALLOW_DEMO_SEED=true`.
+- Required a separate `DEMO_DATABASE_URL` and reject the production database,
+  including equivalent Neon pooled/direct hostnames.
+- Added a console-only demo runner that exercises the real repository, analysis,
+  alert, suppression, and notification-history services without contacting
+  Telegram.
+- Added the scheduled GitHub Actions workflow with a three-hour cron, manual
+  dispatch, least-privilege permissions, concurrency control, timeout, locked
+  dependency installation, build, and production execution.
+- Added demo-scenario and seed-safety tests.
+- Added complete setup, Neon, Telegram, environment, testing, demo, GitHub
+  Actions, provider-extension, operations, and future-improvement documentation
+  in the root README.
+
 ### Current architecture
 
 The application is a short-lived scheduled batch process. A provider fetches
@@ -75,14 +98,17 @@ See `ARCHITECTURE.md` for module boundaries and data-source decisions.
 
 ### Remaining tasks
 
-#### Phase 4
+All four requested implementation phases are complete. Before relying on the
+scheduled production workflow:
 
-- Add fictional city-average historical seed/demo scenarios.
-- Add the three-hour GitHub Actions workflow and manual dispatch.
-- Complete end-user setup, Neon, Telegram, provider, and operations documentation.
-- Add database-focused integration coverage and a documented end-to-end demo.
+- apply migrations with `npm run db:migrate`;
+- push the Phase 4 commit;
+- configure the three GitHub repository secrets;
+- optionally configure threshold repository variables; and
+- run the workflow manually once from the GitHub Actions tab.
 
 ## Continuation note
 
-Begin the next session at Phase 4. Do not describe observations as station prices
-and do not use PretCarburant station endpoints or HTML scraping.
+Use `README.md` as the operational entry point. Continue to describe observations
+as city averages, and do not use PretCarburant station endpoints or HTML
+scraping.

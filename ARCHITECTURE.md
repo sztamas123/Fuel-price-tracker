@@ -55,9 +55,9 @@ GitHub Actions
 3. **Database-level integrity:** tracked cities own observations and notification
    history. Foreign keys, positive-price checks, constrained text, and indexes
    protect the data independently of application validation.
-4. **Application-managed migrations:** numbered SQL files are committed and can
-   be applied in order during setup. Runtime jobs will not silently mutate the
-   schema.
+4. **Application-managed migrations:** numbered SQL files are committed and
+   applied explicitly with `npm run db:migrate`. Applied names are recorded in
+   `schema_migrations`; monitoring runs never silently mutate the schema.
 5. **Configuration fails fast:** missing secrets and invalid thresholds stop a
    run before network or database work begins. An optional absolute target is
    represented as `null` when unset.
@@ -88,7 +88,16 @@ GitHub Actions
 9. Close resources and exit with a meaningful status code.
 
 Steps 2-5 are implemented in Phase 2 and steps 6-9 in Phase 3. Operational
-packaging, seed/demo data, and end-user documentation belong to Phase 4.
+packaging, isolated seed/demo data, and end-user documentation are implemented
+in Phase 4.
+
+## Production and demo isolation
+
+Production runs use `DATABASE_URL` and real PretCarburant observations. Demo
+commands require `ALLOW_DEMO_SEED=true` plus a distinct `DEMO_DATABASE_URL`.
+They compare normalized production/demo database identities and refuse to run
+against the same database. Demo notification delivery is console-only and never
+contacts Telegram.
 
 ## Alert semantics
 

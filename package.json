@@ -9,6 +9,10 @@
     "check": "tsc -p tsconfig.json --noEmit",
     "start": "node dist/jobs/monitor-fuel-prices.js",
     "dev": "tsx src/jobs/monitor-fuel-prices.ts",
+    "db:migrate": "tsx src/database/run-migrations.ts",
+    "seed:demo": "tsx src/database/seed-demo.ts",
+    "seed:cleanup": "tsx src/database/seed-demo.ts --cleanup",
+    "demo": "npm run seed:demo && tsx src/jobs/run-demo.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },

@@ -1,6 +1,4 @@
-BEGIN;
-
-CREATE TABLE tracked_cities (
+CREATE TABLE IF NOT EXISTS tracked_cities (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   external_id TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL CHECK (length(trim(name)) > 0),
@@ -12,7 +10,7 @@ CREATE TABLE tracked_cities (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE fuel_price_observations (
+CREATE TABLE IF NOT EXISTS fuel_price_observations (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   city_id BIGINT NOT NULL REFERENCES tracked_cities(id) ON DELETE CASCADE,
   fuel_type TEXT NOT NULL CHECK (length(trim(fuel_type)) > 0),
@@ -24,7 +22,7 @@ CREATE TABLE fuel_price_observations (
   UNIQUE (city_id, fuel_type, observed_at, source)
 );
 
-CREATE TABLE notifications (
+CREATE TABLE IF NOT EXISTS notifications (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   city_id BIGINT NOT NULL REFERENCES tracked_cities(id) ON DELETE CASCADE,
   fuel_type TEXT NOT NULL CHECK (length(trim(fuel_type)) > 0),
@@ -33,14 +31,12 @@ CREATE TABLE notifications (
   sent_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_tracked_cities_enabled
+CREATE INDEX IF NOT EXISTS idx_tracked_cities_enabled
   ON tracked_cities (enabled)
   WHERE enabled = TRUE;
 
-CREATE INDEX idx_observations_city_fuel_observed
+CREATE INDEX IF NOT EXISTS idx_observations_city_fuel_observed
   ON fuel_price_observations (city_id, fuel_type, observed_at DESC);
 
-CREATE INDEX idx_notifications_city_fuel_sent
+CREATE INDEX IF NOT EXISTS idx_notifications_city_fuel_sent
   ON notifications (city_id, fuel_type, sent_at DESC);
-
-COMMIT;

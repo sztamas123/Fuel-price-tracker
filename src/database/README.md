@@ -1,15 +1,38 @@
-# Database migrations
+# Database operations
 
-Apply numbered SQL files in ascending order to the Neon database. For example,
-with PostgreSQL's `psql` client installed:
+## Production migrations
+
+Set `DATABASE_URL` and run:
 
 ```bash
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
-  -f src/database/migrations/001_initial_schema.sql
+npm run db:migrate
 ```
 
-The initial schema stores tracked cities and city-average fuel observations. It
-does not model or claim to track individual gas stations.
+Numbered SQL files in `migrations/` are applied in lexical order. Successful
+migrations are recorded in `schema_migrations`. The application monitoring job
+never applies schema changes automatically.
 
-Runtime migration automation is intentionally deferred to a later phase. Phase
-2 repositories use this schema but never apply migrations automatically.
+The initial schema stores tracked cities and city-average observations. It does
+not model or claim to track individual gas stations.
+
+## Demo database
+
+Demo data must use a separate PostgreSQL database or Neon branch:
+
+```env
+DATABASE_URL=postgresql://production-connection
+DEMO_DATABASE_URL=postgresql://separate-demo-connection
+ALLOW_DEMO_SEED=true
+```
+
+Run:
+
+```bash
+npm run demo
+npm run seed:cleanup
+```
+
+The guard compares production and demo database identities, including normalized
+Neon pooled/direct hostnames, and refuses to continue if they match. Cleanup is
+limited to tracked-city external IDs beginning with `demo-`; foreign-key cascades
+remove their observations and notification history.
