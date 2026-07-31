@@ -397,8 +397,11 @@ types.
 - Telegram delivery and PostgreSQL cannot share a transaction. If Telegram
   succeeds and the subsequent database write fails, the next run could repeat
   that notification.
-- Current `pg` versions treat `sslmode=require` with certificate verification.
-  Follow future `pg` migration guidance if upgrading to a new major version.
+- Common PostgreSQL SSL aliases such as `sslmode=require` are normalized to
+  `verify-full`, preserving certificate verification without relying on
+  version-specific `pg` alias behavior.
+- The pool allows 30 seconds for a serverless database cold start and enables
+  TCP keepalive.
 - Source prices are informational; the price displayed at the pump remains
   authoritative.
 

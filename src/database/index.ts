@@ -1,1 +1,1 @@
-export { createDatabasePool } from "./pool.js";
+export { createDatabasePool, normalizeDatabaseUrl } from "./pool.js";
